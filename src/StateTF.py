@@ -18,8 +18,6 @@ class StateTF:
         with open(pwd_params, 'r') as f:
             self.params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
 
-        # print(self.params)
-
         self.tf_listener = tf.TransformListener()
         self.tf_br = tf.TransformBroadcaster()
 
@@ -74,7 +72,7 @@ class StateTF:
 
 
 if __name__ == '__main__':
-    rospy.init_node('StateTF')
+    rospy.init_node('map_hokuyo')
     state_tf = StateTF()
     time.sleep(1)
     state_tf.world2motor()
