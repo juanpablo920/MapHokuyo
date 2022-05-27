@@ -8,6 +8,7 @@
 
     <!--- Nodes -->
     <node pkg="$(arg project)" type="StateTF.py" name="StateTF" output="screen" respawn="true"></node>
+    <node pkg="$(arg project)" type="Map.py" name="Map" output="screen" respawn="true"></node>
 
     <!--- Run Rviz-->
     <node pkg="rviz" type="rviz" name="$(arg project)_rviz" args="-d $(find map_hokuyo)/config/rviz.rviz" />
