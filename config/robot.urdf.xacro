@@ -4,17 +4,17 @@
 
   <link name="world"></link>
 
-  <link name="motor"></link>
-  <joint name="motor_joint" type="fixed">
+  <link name="dynamixel"></link>
+  <joint name="dynamixel_joint" type="fixed">
     <parent link="world" />
-    <child link="motor" />
-    <origin xyz="0 0 2" rpy="0 0 0" />
+    <child link="dynamixel" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
 
-  <link name="hokuyo"></link>
-  <joint name="hokuyo_joint" type="fixed">
-    <parent link="motor" />
-    <child link="hokuyo" />
-    <origin xyz="0 0 0.05" rpy="0 0 0" />
+  <link name="laser"></link>
+  <joint name="laser_joint" type="fixed">
+    <parent link="dynamixel" />
+    <child link="laser" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
 </robot>
