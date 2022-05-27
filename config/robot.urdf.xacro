@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="hokuyoScan" xmlns:xacro="https://github.com/juanpablo920">
+  <xacro:property name="PI" value="3.1415926535897931" />
+
+  <link name="world"></link>
+
+  <link name="motor"></link>
+  <joint name="motor_joint" type="fixed">
+    <parent link="world" />
+    <child link="motor" />
+    <origin xyz="0 0 2" rpy="0 0 0" />
+  </joint>
+
+  <link name="hokuyo"></link>
+  <joint name="hokuyo_joint" type="fixed">
+    <parent link="motor" />
+    <child link="hokuyo" />
+    <origin xyz="0 0 0.05" rpy="0 0 0" />
+  </joint>
+</robot>

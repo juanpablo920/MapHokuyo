@@ -1,0 +1,12 @@
+map_hokuyo:
+  frames:
+    world: "world"
+    motor: "dynamixel"
+    lidar: "laser"
+
+  origins:
+    world2motor:
+      z: 2
+
+    motor2lidar:
+      z: 0.05
