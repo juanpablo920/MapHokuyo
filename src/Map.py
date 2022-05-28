@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from sqlalchemy import false, true
 import rospy
 import rospkg
 import tf
@@ -22,25 +23,28 @@ class MapHokuyo:
         with open(pwd_params, 'r') as f:
             self.params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
 
-        self.sub_motor = None
         self.sub_lidar = None
+        self.sub_motor = None
 
         self.pub_map = None
 
-        self.pub_motor_flag = None
         self.pub_lidar_flag = None
+        self.pub_motor_flag = None
+
+        self.lidar_flag = 0
+        self.motor_flag = 0
 
     def setting_subscriber(self):
-        self.sub_motor = rospy.Subscriber(
-            "/dynamixel_mx/pose",
-            PointStamped,
-            self.motor_flag,
-            queue_size=100)
-
         self.sub_lidar = rospy.Subscriber(
             "/echoes",
             MultiEchoLaserScan,
-            self.lidar_flag,
+            self.scanning,
+            queue_size=100)
+
+        self.sub_motor = rospy.Subscriber(
+            "/dynamixel_mx/pose",
+            PointStamped,
+            self.mapping,
             queue_size=100)
 
     def setting_publisher(self):
@@ -48,21 +52,28 @@ class MapHokuyo:
             "/map_hokuyo/map/pointcloud",
             PointCloud2)
 
-        self.pub_motor_flag = rospy.Publisher(
-            "map_hokuyo/motor/flag",
-            Int16)
-
         self.pub_lidar_flag = rospy.Publisher(
             "map_hokuyo/lidar/flag",
             Int16)
 
-    def motor_flag(self, point_ros):
-        self.pub_motor_flag.publish(1)
-        self.pub_motor_flag.publish(0)
+        self.pub_motor_flag = rospy.Publisher(
+            "map_hokuyo/motor/flag",
+            Int16)
 
-    def lidar_flag(self, multiEcho_ros):
+    def scanning(self, multiEcho_ros):
+        self.lidar_flag = 0
         self.pub_lidar_flag.publish(1)
         self.pub_lidar_flag.publish(0)
+        self.lidar_flag = 0
+
+    def mapping(self, point_ros):
+        self.motor_flag = 1
+        self.pub_lidar_flag.publish(1)
+        self.pub_lidar_flag.publish(0)
+        self.motor_flag = 0
+
+    def publish_flags():
+        pass
 
 
 if __name__ == '__main__':
@@ -71,4 +82,10 @@ if __name__ == '__main__':
     map_hokuyo.setting_publisher()
     map_hokuyo.setting_subscriber()
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
-    rospy.spin()
+    while not rospy.is_shutdown():
+        if map_hokuyo.lidar_flag == 0:
+            map_hokuyo.pub_lidar_flag.publish(0)
+
+        if map_hokuyo.motor_flag == 0:
+            map_hokuyo.pub_motor_flag.publish(0)
+    # rospy.spin()
