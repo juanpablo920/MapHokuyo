@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from sqlalchemy import false, true
 import rospy
 import rospkg
 import tf

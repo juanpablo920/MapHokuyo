@@ -24,7 +24,9 @@
     rm "eliminar archivos" 
 
 - Rosrun
+    catkin_make
     source devel/setup.bash
+    roslaunch map_hokuyo run.launch
     rosrun dynamixel_mx dynamixel_mx.py
 
     rosrun rqt_topic rqt_topic
