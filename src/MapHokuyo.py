@@ -58,10 +58,24 @@ class MapHokuyo:
 
     def scanning(self, multiEcho_ros):
         self.pub_lidar_flag.publish(1)
+        self.multiEcho_ros = multiEcho_ros
+        self.flag_Echo = True
         self.pub_lidar_flag.publish(0)
 
-    def mapping(self, point_ros):
+    def mapping(self, pose_motor_ros):
         self.pub_motor_flag.publish(1)
+        while self.flag_Echo == False:
+            pass
+        self.flag_Echo = False
+
+        int_Lidar_ros = self.multiEcho_ros.intensities
+        print(int_Lidar_ros)
+        print(type(int_Lidar_ros))
+        range_Lidar_ros = self.multiEcho_ros.ranges
+        print(range_Lidar_ros)
+        print(type(range_Lidar_ros))
+        print(range_Lidar_ros)
+
         self.pub_motor_flag.publish(0)
 
     def publish_flags():
