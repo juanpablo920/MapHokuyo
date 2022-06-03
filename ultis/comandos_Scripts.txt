@@ -13,6 +13,7 @@
 
 - ssh 
     ssh -Y pi@10.42.0.254 ----> PC JPablo
+    ssh -Y pi@172.20.10.8------>iPhone JP
     pss: pi.123
 
 - bash
@@ -27,7 +28,12 @@
     catkin_make
     source devel/setup.bash
     roslaunch map_hokuyo run.launch
+    roscore
     rosrun dynamixel_mx dynamixel_mx.py
+    rosrun urg_node urg_node _ip_address:="192.168.0.10" _publish_multiecho:="true"
+    rosbag record -a
+
+    rosrun map_hokuyo MapHokuyo.py
 
     rosrun rqt_topic rqt_topic
     rosrun rqt_plot rqt_plot
