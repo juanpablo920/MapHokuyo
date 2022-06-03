@@ -211,9 +211,5 @@ if __name__ == '__main__':
     map_hokuyo.setting_publisher()
     map_hokuyo.setting_subscriber()
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
-    # rospy.spin()
-
-    while not rospy.is_shutdown():
-        pass
-
+    rospy.spin()
     map_hokuyo.save_mapa()
