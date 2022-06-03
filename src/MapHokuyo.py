@@ -193,28 +193,33 @@ class MapHokuyo:
         for idx in range(0, N-1):
             file_base += pwd_src[idx]+"/"
 
-        file_echo0 = file_base + "map_echo0.pcd"
-        file_echo1 = file_base + "map_echo1.pcd"
-        file_echo2 = file_base + "map_echo2.pcd"
+        # file_echo0 = file_base + "map_echo0.pcd"
+        # file_echo1 = file_base + "map_echo1.pcd"
+        # file_echo2 = file_base + "map_echo2.pcd"
 
-        o3d.io.write_point_cloud(file_echo0, self.map_echo0)
-        o3d.io.write_point_cloud(file_echo1, self.map_echo1)
-        o3d.io.write_point_cloud(file_echo2, self.map_echo2)
+        # o3d.io.write_point_cloud(file_echo0, self.map_echo0)
+        # o3d.io.write_point_cloud(file_echo1, self.map_echo1)
+        # o3d.io.write_point_cloud(file_echo2, self.map_echo2)
 
-        # with open(file, 'w') as f:
-        #     f.write("x y z echo\n")
+        file = file_base + "map_echoes.txt"
+        with open(file, 'w') as f:
+            f.write("X Y Z Echo Intensity\n")
 
-        # for x, y, z in self.map_echo0:
-        #     with open(file, 'a') as f:
-        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(0)+"\n")
+        with open(file, 'a') as f:
+            for idx, xyz_tmp in enumerate(self.map_echo0.points):
+                x, y, z = xyz_tmp
+                f.write(str(x)+" "+str(y)+" "+str(z)+" " +
+                        str(0)+" "+str(self.intensities_0[idx])+"\n")
 
-        # for x, y, z in self.map_echo1:
-        #     with open(file, 'a') as f:
-        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(1)+"\n")
+            for idx, xyz_tmp in enumerate(self.map_echo1.points):
+                x, y, z = xyz_tmp
+                f.write(str(x)+" "+str(y)+" "+str(z)+" " +
+                        str(1)+" "+str(self.intensities_1[idx])+"\n")
 
-        # for x, y, z in self.map_echo2:
-        #     with open(file, 'a') as f:
-        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(2)+"\n")
+            for idx, xyz_tmp in enumerate(self.map_echo2.points):
+                x, y, z = xyz_tmp
+                f.write(str(x)+" "+str(y)+" "+str(z)+" " +
+                        str(2)+" "+str(self.intensities_2[idx])+"\n")
 
 
 if __name__ == '__main__':
