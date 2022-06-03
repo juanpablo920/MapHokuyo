@@ -183,14 +183,24 @@ class MapHokuyo:
         print("")
         print("save_mapa")
         print("")
-        file = "/home/sirui/Pictures/map_echos.txt"
 
-        # o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
-        o3d.io.write_point_cloud(
-            "/home/juanpablo/Imágenes/map_echos.pcd", self.map_echo0)
-            #/home/juanpablo/Imágenes
-            #/home/sirui/Pictures/
+        r = rospkg.RosPack()
+        pwd_src = r.get_path('map_hokuyo')
+        pwd_src = pwd_src.split("/")
+        N = len(pwd_src)
 
+        file_base = ""
+
+        for idx in range(0, N-1):
+            file_base += pwd_src[idx]+"/"
+
+        file_echo0 = file_base + "map_echo0.txt"
+        file_echo1 = file_base + "map_echo1.txt"
+        file_echo2 = file_base + "map_echo2.txt"
+
+        o3d.io.write_point_cloud(file_echo0, self.map_echo0)
+        o3d.io.write_point_cloud(file_echo1, self.map_echo1)
+        o3d.io.write_point_cloud(file_echo2, self.map_echo2)
 
         # with open(file, 'w') as f:
         #     f.write("x y z echo\n")
