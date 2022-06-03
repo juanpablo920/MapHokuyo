@@ -169,6 +169,27 @@ class MapHokuyo:
 
         self.pub_motor_flag.publish(0)
 
+    def save_mapa(self):
+        print("")
+        print("save_mapa")
+        print("")
+        file = "/home/sirui/Pictures/map_echos.txt"
+
+        with open(file, 'w') as f:
+            f.write("x y z echo\n")
+
+        for x, y, z in self.map_echo0:
+            with open(file, 'a') as f:
+                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(0)+"\n")
+
+        for x, y, z in self.map_echo1:
+            with open(file, 'a') as f:
+                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(1)+"\n")
+
+        for x, y, z in self.map_echo2:
+            with open(file, 'a') as f:
+                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(2)+"\n")
+
 
 if __name__ == '__main__':
     rospy.init_node('map_hokuyo')
@@ -176,4 +197,6 @@ if __name__ == '__main__':
     map_hokuyo.setting_publisher()
     map_hokuyo.setting_subscriber()
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
-    rospy.spin()
+    while not rospy.is_shutdown():
+        pass
+    map_hokuyo.save_mapa()
