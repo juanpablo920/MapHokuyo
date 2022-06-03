@@ -194,9 +194,9 @@ class MapHokuyo:
         for idx in range(0, N-1):
             file_base += pwd_src[idx]+"/"
 
-        file_echo0 = file_base + "map_echo0.txt"
-        file_echo1 = file_base + "map_echo1.txt"
-        file_echo2 = file_base + "map_echo2.txt"
+        file_echo0 = file_base + "map_echo0.pcd"
+        file_echo1 = file_base + "map_echo1.pcd"
+        file_echo2 = file_base + "map_echo2.pcd"
 
         o3d.io.write_point_cloud(file_echo0, self.map_echo0)
         o3d.io.write_point_cloud(file_echo1, self.map_echo1)
