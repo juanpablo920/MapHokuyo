@@ -26,7 +26,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: map_echo0
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -107,8 +107,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 56.8158073425293
-        Min Value: -38.567256927490234
+        Max Value: 1.959437370300293
+        Min Value: -12.474701881408691
         Value: true
       Axis: X
       Channel Name: intensity
@@ -135,14 +135,14 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 1.9127177000045776
+        Min Value: -3.956907272338867
         Value: true
-      Axis: Z
+      Axis: X
       Channel Name: intensity
       Class: rviz/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: Intensity
+      Color Transformer: AxisColor
       Decay Time: 0
       Enabled: false
       Invert Rainbow: false
@@ -163,14 +163,14 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 0
+        Min Value: 0
         Value: true
-      Axis: Z
+      Axis: X
       Channel Name: intensity
       Class: rviz/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: Intensity
+      Color Transformer: AxisColor
       Decay Time: 0
       Enabled: false
       Invert Rainbow: false
@@ -216,7 +216,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 12.853630065917969
+      Distance: 13.78306770324707
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -232,9 +232,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5647964477539062
+      Pitch: 0.9247970581054688
       Target Frame: dynamixel
-      Yaw: 2.910417318344116
+      Yaw: 3.1104178428649902
     Saved: ~
 Window Geometry:
   Displays:
@@ -253,4 +253,4 @@ Window Geometry:
     collapsed: false
   Width: 1294
   X: 72
-  Y: 27
+  Y: 0
