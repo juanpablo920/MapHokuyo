@@ -6,7 +6,7 @@ map_hokuyo:
 
   origins:
     world2motor:
-      xyz: [0, 0, 2]
+      xyz: [0, 0, 1.25]
 
     motor2lidar:
       xyz: [0, 0, 0.05]

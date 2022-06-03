@@ -31,7 +31,7 @@ class MapHokuyo:
         self.map_echo2 = np.array([[0, 0, 0]])
 
         self.map_header = Header()
-        self.map_header.frame_id = self.params["frames"]["lidar"]
+        self.map_header.frame_id = self.params["frames"]["world"]
 
         self.sub_lidar = None
         self.sub_motor = None
@@ -140,19 +140,23 @@ class MapHokuyo:
         pcd_echo2[1, :] = ranges_2*np.sin(tetha)
         pcd_echo2[2, :] = np.zeros([1, N])
 
-        rvec = [0, pose_motor_ros.point.x, 0]
-        # tvec =
+        rvec = np.radians([0, -pose_motor_ros.point.x, 0])
+        tvec = [0, 0, 0]
+        tvec[2] += self.params["origins"]["world2motor"]["xyz"][2]
+        tvec[2] += self.params["origins"]["motor2lidar"]["xyz"][2]
 
         mp_velo = np.eye(4)
         mp_velo[:3, :3] = cv2.Rodrigues(rvec)[0]
-        # mp_velo[0, 3] = trans[0]
-        # mp_velo[1, 3] = trans[1]
-        # mp_velo[2, 3] = trans[2]
+        mp_velo[:3, 3] = tvec
 
-        map_echo_tmp = mp_velo.dot(pts_3d_r2).T[:, :3]
-        self.map_echo0 = np.append(self.map_echo0, map_tmp1, axis=0)
-        self.map_echo1 = np.append(self.map_echo1, map_tmp1, axis=0)
-        self.map_echo2 = np.append(self.map_echo2, map_tmp1, axis=0)
+        map_echo_tmp = mp_velo.dot(pcd_echo0).T[:, :3]
+        self.map_echo0 = np.append(self.map_echo0, map_echo_tmp, axis=0)
+
+        map_echo_tmp = mp_velo.dot(pcd_echo1).T[:, :3]
+        self.map_echo1 = np.append(self.map_echo1, map_echo_tmp, axis=0)
+
+        map_echo_tmp = mp_velo.dot(pcd_echo2).T[:, :3]
+        self.map_echo2 = np.append(self.map_echo2, map_echo_tmp, axis=0)
 
         self.pub_map_echo0.publish(
             point_cloud2.create_cloud_xyz32(self.map_header, self.map_echo0))
