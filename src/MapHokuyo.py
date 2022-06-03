@@ -185,20 +185,24 @@ class MapHokuyo:
         print("")
         file = "/home/sirui/Pictures/map_echos.txt"
 
-        with open(file, 'w') as f:
-            f.write("x y z echo\n")
+        # o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
+        o3d.io.write_point_cloud(
+            "/home/sirui/Pictures/map_echos.pcd", self.map_echo0)
 
-        for x, y, z in self.map_echo0:
-            with open(file, 'a') as f:
-                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(0)+"\n")
+        # with open(file, 'w') as f:
+        #     f.write("x y z echo\n")
 
-        for x, y, z in self.map_echo1:
-            with open(file, 'a') as f:
-                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(1)+"\n")
+        # for x, y, z in self.map_echo0:
+        #     with open(file, 'a') as f:
+        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(0)+"\n")
 
-        for x, y, z in self.map_echo2:
-            with open(file, 'a') as f:
-                f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(2)+"\n")
+        # for x, y, z in self.map_echo1:
+        #     with open(file, 'a') as f:
+        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(1)+"\n")
+
+        # for x, y, z in self.map_echo2:
+        #     with open(file, 'a') as f:
+        #         f.write(str(x)+" "+str(y)+" "+str(z)+" "+str(2)+"\n")
 
 
 if __name__ == '__main__':
@@ -212,8 +216,4 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         pass
 
-    # o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
-    o3d.io.write_point_cloud(
-        "/home/sirui/Pictures/map_echos.pcd", map_hokuyo.map_echo0)
-
-    # map_hokuyo.save_mapa()
+    map_hokuyo.save_mapa()
