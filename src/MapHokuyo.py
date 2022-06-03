@@ -164,18 +164,18 @@ class MapHokuyo:
         self.intensities_1.extend(intensities_1)
         self.intensities_2.extend(intensities_2)
 
-        map_echo0_numpy = np.asarray(self.map_echo0.points)
-        map_echo1_numpy = np.asarray(self.map_echo1.points)
-        map_echo2_numpy = np.asarray(self.map_echo2.points)
+        # map_echo0_numpy = np.asarray(self.map_echo0.points)
+        # map_echo1_numpy = np.asarray(self.map_echo1.points)
+        # map_echo2_numpy = np.asarray(self.map_echo2.points)
 
-        self.pub_map_echo0.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, map_echo0_numpy))
+        # self.pub_map_echo0.publish(
+        #     point_cloud2.create_cloud_xyz32(self.map_header, map_echo0_numpy))
 
-        self.pub_map_echo1.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, map_echo1_numpy))
+        # self.pub_map_echo1.publish(
+        #     point_cloud2.create_cloud_xyz32(self.map_header, map_echo1_numpy))
 
-        self.pub_map_echo2.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, map_echo2_numpy))
+        # self.pub_map_echo2.publish(
+        #     point_cloud2.create_cloud_xyz32(self.map_header, map_echo2_numpy))
 
         self.pub_motor_flag.publish(0)
 
@@ -207,8 +207,11 @@ if __name__ == '__main__':
     map_hokuyo.setting_publisher()
     map_hokuyo.setting_subscriber()
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
-    rospy.spin()
+    # rospy.spin()
 
-    # while not rospy.is_shutdown():
-    #     pass
+    while not rospy.is_shutdown():
+        pass
+
+    o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
+
     # map_hokuyo.save_mapa()
