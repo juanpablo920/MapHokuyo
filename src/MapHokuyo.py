@@ -27,9 +27,13 @@ class MapHokuyo:
         with open(pwd_params, 'r') as f:
             self.params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
 
-        self.map_echo0 = np.array([[0, 0, 0]])
-        self.map_echo1 = np.array([[0, 0, 0]])
-        self.map_echo2 = np.array([[0, 0, 0]])
+        self.map_echo0 = o3d.geometry.PointCloud()
+        self.map_echo1 = o3d.geometry.PointCloud()
+        self.map_echo2 = o3d.geometry.PointCloud()
+
+        self.intensities_0 = o3d.utility.DoubleVector()
+        self.intensities_1 = o3d.utility.DoubleVector()
+        self.intensities_2 = o3d.utility.DoubleVector()
 
         self.map_header = Header()
         self.map_header.frame_id = self.params["frames"]["world"]
@@ -103,73 +107,75 @@ class MapHokuyo:
         tetha = np.linspace(
             multiEcho_ros.angle_min, multiEcho_ros.angle_max, N)
 
-        #             x    y    z    1
-        pcd_echo0 = [[0], [0], [0], [1]]
-        pcd_echo1 = [[0], [0], [0], [1]]
-        pcd_echo2 = [[0], [0], [0], [1]]
+        pcd_echo0 = o3d.geometry.PointCloud()
+        pcd_echo1 = o3d.geometry.PointCloud()
+        pcd_echo2 = o3d.geometry.PointCloud()
 
-        intensities_0 = [0]
-        intensities_1 = [0]
-        intensities_2 = [0]
+        intensities_0 = o3d.utility.DoubleVector()
+        intensities_1 = o3d.utility.DoubleVector()
+        intensities_2 = o3d.utility.DoubleVector()
 
         for idx in range(0, N):
             range_tmp = range_Lidar_ros[idx]
             intensities_tmp = int_Lidar_ros[idx]
             N_tmp = len(intensities_tmp.echoes)
 
-            pcd_echo0[0].append(range_tmp.echoes[0]*np.cos(tetha[idx]))
-            pcd_echo0[1].append(range_tmp.echoes[0]*np.sin(tetha[idx]))
-            pcd_echo0[2].append(0)
-            pcd_echo0[3].append(1)
+            pcd_echo0.points.append([
+                range_tmp.echoes[0]*np.cos(tetha[idx]),
+                range_tmp.echoes[0]*np.sin(tetha[idx]),
+                0])
 
             intensities_0.append(intensities_tmp.echoes[0])
 
             if N_tmp > 1:
-                pcd_echo1[0].append(range_tmp.echoes[1]*np.cos(tetha[idx]))
-                pcd_echo1[1].append(range_tmp.echoes[1]*np.sin(tetha[idx]))
-                pcd_echo1[2].append(0)
-                pcd_echo1[3].append(1)
+                pcd_echo1.points.append([
+                    range_tmp.echoes[1]*np.cos(tetha[idx]),
+                    range_tmp.echoes[1]*np.sin(tetha[idx]),
+                    0])
 
                 intensities_1.append(intensities_tmp.echoes[1])
 
                 if N_tmp > 2:
-                    pcd_echo2[0].append(range_tmp.echoes[2]*np.cos(tetha[idx]))
-                    pcd_echo2[1].append(range_tmp.echoes[2]*np.sin(tetha[idx]))
-                    pcd_echo2[2].append(0)
-                    pcd_echo2[3].append(1)
+                    pcd_echo2.points.append([
+                        range_tmp.echoes[2]*np.cos(tetha[idx]),
+                        range_tmp.echoes[2]*np.sin(tetha[idx]),
+                        0])
 
                     intensities_2.append(intensities_tmp.echoes[2])
 
-        pcd_echo0 = np.array(pcd_echo0)
-        pcd_echo1 = np.array(pcd_echo1)
-        pcd_echo2 = np.array(pcd_echo2)
-
         rvec = np.radians([0, -pose_motor_ros.point.x, 0])
-        tvec = [0, 0, 0]
-        tvec[2] += self.params["origins"]["world2motor"]["xyz"][2]
-        tvec[2] += self.params["origins"]["motor2lidar"]["xyz"][2]
+        tvec_z = 0
+        tvec_z += self.params["origins"]["world2motor"]["xyz"][2]
+        tvec_z += self.params["origins"]["motor2lidar"]["xyz"][2]
 
-        mp_velo = np.eye(4)
-        mp_velo[:3, :3] = cv2.Rodrigues(rvec)[0]
-        mp_velo[:3, 3] = tvec
+        mp_lidar = np.eye(4)
+        mp_lidar[:3, :3] = cv2.Rodrigues(rvec)[0]
+        mp_lidar[2, 3] = tvec_z
 
-        map_echo_tmp = mp_velo.dot(pcd_echo0).T[:, :3]
-        self.map_echo0 = np.append(self.map_echo0, map_echo_tmp, axis=0)
+        pcd_echo0.transform(mp_lidar)
+        pcd_echo1.transform(mp_lidar)
+        pcd_echo2.transform(mp_lidar)
 
-        map_echo_tmp = mp_velo.dot(pcd_echo1).T[:, :3]
-        self.map_echo1 = np.append(self.map_echo1, map_echo_tmp, axis=0)
+        self.map_echo0.points.extend(pcd_echo0.points)
+        self.map_echo1.points.extend(pcd_echo1.points)
+        self.map_echo2.points.extend(pcd_echo2.points)
 
-        map_echo_tmp = mp_velo.dot(pcd_echo2).T[:, :3]
-        self.map_echo2 = np.append(self.map_echo2, map_echo_tmp, axis=0)
+        self.intensities_0.extend(intensities_0)
+        self.intensities_1.extend(intensities_1)
+        self.intensities_2.extend(intensities_2)
+
+        map_echo0_numpy = np.asarray(self.map_echo0.points)
+        map_echo1_numpy = np.asarray(self.map_echo1.points)
+        map_echo2_numpy = np.asarray(self.map_echo2.points)
 
         self.pub_map_echo0.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, self.map_echo0))
+            point_cloud2.create_cloud_xyz32(self.map_header, map_echo0_numpy))
 
         self.pub_map_echo1.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, self.map_echo1))
+            point_cloud2.create_cloud_xyz32(self.map_header, map_echo1_numpy))
 
         self.pub_map_echo2.publish(
-            point_cloud2.create_cloud_xyz32(self.map_header, self.map_echo1))
+            point_cloud2.create_cloud_xyz32(self.map_header, map_echo2_numpy))
 
         self.pub_motor_flag.publish(0)
 
