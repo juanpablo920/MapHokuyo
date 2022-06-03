@@ -3,7 +3,6 @@
 import rospy
 import rospkg
 import tf
-import numpy as np
 from std_msgs.msg import Header
 from std_msgs.msg import Int16
 from sensor_msgs import point_cloud2
@@ -12,9 +11,11 @@ from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import PointStamped
 
-import cv2
 import time
 import yaml
+import cv2
+import numpy as np
+import open3d as o3d
 
 
 class MapHokuyo:
@@ -95,50 +96,53 @@ class MapHokuyo:
         self.flag_Echo = False
         multiEcho_ros = self.multiEcho_ros
 
-        angle_min = multiEcho_ros.angle_min
-        angle_max = multiEcho_ros.angle_max
         range_Lidar_ros = multiEcho_ros.ranges
         int_Lidar_ros = multiEcho_ros.intensities
 
         N = len(range_Lidar_ros)
-        tetha = np.linspace(angle_min, angle_max, N)
+        tetha = np.linspace(
+            multiEcho_ros.angle_min, multiEcho_ros.angle_max, N)
 
-        ranges_0 = np.zeros([1, N])
-        ranges_1 = np.zeros([1, N])
-        ranges_2 = np.zeros([1, N])
-        intensities_0 = np.zeros([1, N])
-        intensities_1 = np.zeros([1, N])
-        intensities_2 = np.zeros([1, N])
+        #             x    y    z    1
+        pcd_echo0 = [[0], [0], [0], [1]]
+        pcd_echo1 = [[0], [0], [0], [1]]
+        pcd_echo2 = [[0], [0], [0], [1]]
+
+        intensities_0 = [0]
+        intensities_1 = [0]
+        intensities_2 = [0]
 
         for idx in range(0, N):
             range_tmp = range_Lidar_ros[idx]
             intensities_tmp = int_Lidar_ros[idx]
             N_tmp = len(intensities_tmp.echoes)
 
-            ranges_0[0, idx] = range_tmp.echoes[0]
-            intensities_0[0, idx] = intensities_tmp.echoes[0]
+            pcd_echo0[0].append(range_tmp.echoes[0]*np.cos(tetha[idx]))
+            pcd_echo0[1].append(range_tmp.echoes[0]*np.sin(tetha[idx]))
+            pcd_echo0[2].append(0)
+            pcd_echo0[3].append(1)
+
+            intensities_0.append(intensities_tmp.echoes[0])
 
             if N_tmp > 1:
-                ranges_1[0, idx] = range_tmp.echoes[1]
-                intensities_1[0, idx] = intensities_tmp.echoes[1]
+                pcd_echo1[0].append(range_tmp.echoes[1]*np.cos(tetha[idx]))
+                pcd_echo1[1].append(range_tmp.echoes[1]*np.sin(tetha[idx]))
+                pcd_echo1[2].append(0)
+                pcd_echo1[3].append(1)
+
+                intensities_1.append(intensities_tmp.echoes[1])
+
                 if N_tmp > 2:
-                    ranges_2[0, idx] = range_tmp.echoes[2]
-                    intensities_2[0, idx] = intensities_tmp.echoes[2]
+                    pcd_echo2[0].append(range_tmp.echoes[2]*np.cos(tetha[idx]))
+                    pcd_echo2[1].append(range_tmp.echoes[2]*np.sin(tetha[idx]))
+                    pcd_echo2[2].append(0)
+                    pcd_echo2[3].append(1)
 
-        pcd_echo0 = np.ones([4, N])
-        pcd_echo0[0, :] = ranges_0*np.cos(tetha)
-        pcd_echo0[1, :] = ranges_0*np.sin(tetha)
-        pcd_echo0[2, :] = np.zeros([1, N])
+                    intensities_2.append(intensities_tmp.echoes[2])
 
-        pcd_echo1 = np.ones([4, N])
-        pcd_echo1[0, :] = ranges_1*np.cos(tetha)
-        pcd_echo1[1, :] = ranges_1*np.sin(tetha)
-        pcd_echo1[2, :] = np.zeros([1, N])
-
-        pcd_echo2 = np.ones([4, N])
-        pcd_echo2[0, :] = ranges_2*np.cos(tetha)
-        pcd_echo2[1, :] = ranges_2*np.sin(tetha)
-        pcd_echo2[2, :] = np.zeros([1, N])
+        pcd_echo0 = np.array(pcd_echo0)
+        pcd_echo1 = np.array(pcd_echo1)
+        pcd_echo2 = np.array(pcd_echo2)
 
         rvec = np.radians([0, -pose_motor_ros.point.x, 0])
         tvec = [0, 0, 0]
@@ -197,6 +201,8 @@ if __name__ == '__main__':
     map_hokuyo.setting_publisher()
     map_hokuyo.setting_subscriber()
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
-    while not rospy.is_shutdown():
-        pass
-    map_hokuyo.save_mapa()
+    rospy.spin()
+
+    # while not rospy.is_shutdown():
+    #     pass
+    # map_hokuyo.save_mapa()
