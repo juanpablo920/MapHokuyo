@@ -67,13 +67,13 @@ class MapHokuyo:
 
         self.pub_lidar_flag = rospy.Publisher(
             "map_hokuyo/lidar/flag",
-            Int16,
-            queue_size=1)
+            Int16
+            )
 
         self.pub_motor_flag = rospy.Publisher(
             "map_hokuyo/motor/flag",
-            Int16,
-            queue_size=1)
+            Int16
+        )
 
     def scanning(self, multiEcho_ros):
         self.pub_lidar_flag.publish(1)
@@ -83,66 +83,66 @@ class MapHokuyo:
 
     def mapping(self, pose_motor_ros):
         self.pub_motor_flag.publish(1)
-        while self.flag_Echo == False:
-            pass
-        self.flag_Echo = False
-        multiEcho_ros = self.multiEcho_ros
+    #     while self.flag_Echo == False:
+    #         pass
+    #     self.flag_Echo = False
+    #     multiEcho_ros = self.multiEcho_ros
 
-        header_echos = multiEcho_ros.header
+    #     header_echos = multiEcho_ros.header
 
-        angle_min = multiEcho_ros.angle_min
-        angle_max = multiEcho_ros.angle_max
-        range_Lidar_ros = multiEcho_ros.ranges
-        int_Lidar_ros = multiEcho_ros.intensities
+    #     angle_min = multiEcho_ros.angle_min
+    #     angle_max = multiEcho_ros.angle_max
+    #     range_Lidar_ros = multiEcho_ros.ranges
+    #     int_Lidar_ros = multiEcho_ros.intensities
 
-        N = len(range_Lidar_ros)
-        tetha = np.linspace(angle_min, angle_max, N)
+    #     N = len(range_Lidar_ros)
+    #     tetha = np.linspace(angle_min, angle_max, N)
 
-        ranges_0 = np.zeros([1, N])
-        ranges_1 = np.zeros([1, N])
-        ranges_2 = np.zeros([1, N])
-        intensities_0 = np.zeros([1, N])
-        intensities_1 = np.zeros([1, N])
-        intensities_2 = np.zeros([1, N])
+    #     ranges_0 = np.zeros([1, N])
+    #     ranges_1 = np.zeros([1, N])
+    #     ranges_2 = np.zeros([1, N])
+    #     intensities_0 = np.zeros([1, N])
+    #     intensities_1 = np.zeros([1, N])
+    #     intensities_2 = np.zeros([1, N])
 
-        for idx in range(0, N):
-            range_tmp = range_Lidar_ros[idx]
-            intensities_tmp = int_Lidar_ros[idx]
-            N_tmp = len(intensities_tmp.echoes)
+    #     for idx in range(0, N):
+    #         range_tmp = range_Lidar_ros[idx]
+    #         intensities_tmp = int_Lidar_ros[idx]
+    #         N_tmp = len(intensities_tmp.echoes)
 
-            ranges_0[0, idx] = range_tmp.echoes[0]
-            intensities_0[0, idx] = intensities_tmp.echoes[0]
+    #         ranges_0[0, idx] = range_tmp.echoes[0]
+    #         intensities_0[0, idx] = intensities_tmp.echoes[0]
 
-            if N_tmp > 1:
-                ranges_1[0, idx] = range_tmp.echoes[1]
-                intensities_1[0, idx] = intensities_tmp.echoes[1]
-                if N_tmp > 2:
-                    ranges_2[0, idx] = range_tmp.echoes[2]
-                    intensities_2[0, idx] = intensities_tmp.echoes[2]
+    #         if N_tmp > 1:
+    #             ranges_1[0, idx] = range_tmp.echoes[1]
+    #             intensities_1[0, idx] = intensities_tmp.echoes[1]
+    #             if N_tmp > 2:
+    #                 ranges_2[0, idx] = range_tmp.echoes[2]
+    #                 intensities_2[0, idx] = intensities_tmp.echoes[2]
 
-        pcd_echo0 = np.ones([3, N])
-        pcd_echo0[0, :] = ranges_0*np.cos(tetha)
-        pcd_echo0[1, :] = ranges_0*np.sin(tetha)
-        pcd_echo0[2, :] = np.zeros([1, N])
+    #     pcd_echo0 = np.ones([3, N])
+    #     pcd_echo0[0, :] = ranges_0*np.cos(tetha)
+    #     pcd_echo0[1, :] = ranges_0*np.sin(tetha)
+    #     pcd_echo0[2, :] = np.zeros([1, N])
 
-        pcd_echo1 = np.ones([3, N])
-        pcd_echo1[0, :] = ranges_1*np.cos(tetha)
-        pcd_echo1[1, :] = ranges_1*np.sin(tetha)
-        pcd_echo1[2, :] = np.zeros([1, N])
+    #     pcd_echo1 = np.ones([3, N])
+    #     pcd_echo1[0, :] = ranges_1*np.cos(tetha)
+    #     pcd_echo1[1, :] = ranges_1*np.sin(tetha)
+    #     pcd_echo1[2, :] = np.zeros([1, N])
 
-        pcd_echo2 = np.ones([3, N])
-        pcd_echo2[0, :] = ranges_2*np.cos(tetha)
-        pcd_echo2[1, :] = ranges_2*np.sin(tetha)
-        pcd_echo2[2, :] = np.zeros([1, N])
+    #     pcd_echo2 = np.ones([3, N])
+    #     pcd_echo2[0, :] = ranges_2*np.cos(tetha)
+    #     pcd_echo2[1, :] = ranges_2*np.sin(tetha)
+    #     pcd_echo2[2, :] = np.zeros([1, N])
 
-        self.pub_map_echo0.publish(
-            point_cloud2.create_cloud_xyz32(header_echos, pcd_echo0.T))
+    #     self.pub_map_echo0.publish(
+    #         point_cloud2.create_cloud_xyz32(header_echos, pcd_echo0.T))
 
-        self.pub_map_echo1.publish(
-            point_cloud2.create_cloud_xyz32(header_echos, pcd_echo1.T))
+    #     self.pub_map_echo1.publish(
+    #         point_cloud2.create_cloud_xyz32(header_echos, pcd_echo1.T))
 
-        self.pub_map_echo2.publish(
-            point_cloud2.create_cloud_xyz32(header_echos, pcd_echo2.T))
+    #     self.pub_map_echo2.publish(
+    #         point_cloud2.create_cloud_xyz32(header_echos, pcd_echo2.T))
 
         self.pub_motor_flag.publish(0)
 
