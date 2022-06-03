@@ -10,3 +10,6 @@ map_hokuyo:
 
     motor2lidar:
       xyz: [0, 0, 0.05]
+
+  coordinate:
+    xyz: [0, 0, 0]

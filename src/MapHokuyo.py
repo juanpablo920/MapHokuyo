@@ -21,23 +21,6 @@ import open3d as o3d
 class MapHokuyo:
 
     def __init__(self):
-        r = rospkg.RosPack()
-        pwd_params = r.get_path('map_hokuyo')+'/config/params.yaml'
-
-        with open(pwd_params, 'r') as f:
-            self.params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
-
-        self.map_echo0 = o3d.geometry.PointCloud()
-        self.map_echo1 = o3d.geometry.PointCloud()
-        self.map_echo2 = o3d.geometry.PointCloud()
-
-        self.intensities_0 = o3d.utility.DoubleVector()
-        self.intensities_1 = o3d.utility.DoubleVector()
-        self.intensities_2 = o3d.utility.DoubleVector()
-
-        self.map_header = Header()
-        self.map_header.frame_id = self.params["frames"]["world"]
-
         self.sub_lidar = None
         self.sub_motor = None
 
@@ -49,6 +32,25 @@ class MapHokuyo:
 
         self.pub_lidar_flag = None
         self.pub_motor_flag = None
+
+        r = rospkg.RosPack()
+        pwd_params = r.get_path('map_hokuyo')+'/config/params.yaml'
+
+        with open(pwd_params, 'r') as f:
+            params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
+
+        self.coordinate_xyz = params["coordinate"]["xyz"]
+
+        self.map_echo0 = o3d.geometry.PointCloud()
+        self.map_echo1 = o3d.geometry.PointCloud()
+        self.map_echo2 = o3d.geometry.PointCloud()
+
+        self.intensities_0 = o3d.utility.DoubleVector()
+        self.intensities_1 = o3d.utility.DoubleVector()
+        self.intensities_2 = o3d.utility.DoubleVector()
+
+        self.map_header = Header()
+        self.map_header.frame_id = params["frames"]["world"]
 
     def setting_subscriber(self):
         self.sub_lidar = rospy.Subscriber(
@@ -144,13 +146,10 @@ class MapHokuyo:
                     intensities_2.append(intensities_tmp.echoes[2])
 
         rvec = np.radians([0, -pose_motor_ros.point.x, 0])
-        tvec_z = 0
-        tvec_z += self.params["origins"]["world2motor"]["xyz"][2]
-        tvec_z += self.params["origins"]["motor2lidar"]["xyz"][2]
 
         mp_lidar = np.eye(4)
         mp_lidar[:3, :3] = cv2.Rodrigues(rvec)[0]
-        mp_lidar[2, 3] = tvec_z
+        mp_lidar[:3, 3] = self.coordinate_xyz
 
         pcd_echo0.transform(mp_lidar)
         pcd_echo1.transform(mp_lidar)
