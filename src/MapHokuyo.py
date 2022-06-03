@@ -187,7 +187,10 @@ class MapHokuyo:
 
         # o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
         o3d.io.write_point_cloud(
-            "/home/sirui/Pictures/map_echos.pcd", self.map_echo0)
+            "/home/juanpablo/Imágenes/map_echos.pcd", self.map_echo0)
+            #/home/juanpablo/Imágenes
+            #/home/sirui/Pictures/
+
 
         # with open(file, 'w') as f:
         #     f.write("x y z echo\n")
