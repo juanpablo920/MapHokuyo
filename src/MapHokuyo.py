@@ -212,6 +212,8 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         pass
 
-    o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
+    # o3d.visualization.draw_geometries([map_hokuyo.map_echo0])
+    o3d.io.write_point_cloud(
+        "/home/sirui/Pictures/map_echos.pcd", map_hokuyo.map_echo0)
 
     # map_hokuyo.save_mapa()
