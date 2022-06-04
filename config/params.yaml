@@ -1,9 +1,4 @@
 map_hokuyo:
-  frames:
-    world: "world"
-    motor: "dynamixel"
-    lidar: "laser"
-
   origins:
     world2motor:
       xyz: [0, 0, 1.25]
@@ -13,3 +8,4 @@ map_hokuyo:
 
   coordinate:
     xyz: [0, 0, 0]
+    rpy: [0, 0, 0]

@@ -30,6 +30,7 @@ class MapHokuyo:
             params = yaml.load(f, Loader=yaml.FullLoader)["map_hokuyo"]
 
         self.coordinate_xyz = params["coordinate"]["xyz"]
+        self.coordinate_rpy = params["coordinate"]["rpy"]
 
         self.map_echo0 = o3d.geometry.PointCloud()
         self.map_echo1 = o3d.geometry.PointCloud()
