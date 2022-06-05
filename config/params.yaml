@@ -10,8 +10,6 @@ map_hokuyo:
     xyz: [0, 0, 0]
     rpy: [0, 0, 0]
 
-
-    #Roll = X
-    #Pitch = Y
-    #Yaw = Z
-    
+    # Roll = X
+    # Pitch = Y
+    # Yaw = Z

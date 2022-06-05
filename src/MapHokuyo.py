@@ -118,7 +118,10 @@ class MapHokuyo:
 
                     intensities_2.append(intensities_tmp.echoes[2])
 
-        rvec = np.radians([0, -pose_motor_ros.point.x, 0])
+        motor_rpy = np.radians([0, -pose_motor_ros.point.x, 0])
+        coordinate_rpy = np.radians(self.coordinate_rpy)
+        rvec = motor_rpy + coordinate_rpy
+        # print(rvec)
 
         mp_lidar = np.eye(4)
         mp_lidar[:3, :3] = cv2.Rodrigues(rvec)[0]
