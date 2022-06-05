@@ -118,14 +118,10 @@ class MapHokuyo:
 
                     intensities_2.append(intensities_tmp.echoes[2])
 
-        motor_rpy = np.radians([0, -pose_motor_ros.point.x, 0])
-        coordinate_rpy = np.radians(self.coordinate_rpy)
-        rvec = motor_rpy + coordinate_rpy
-        # print(rvec)
+        rvec = np.radians([0, -pose_motor_ros.point.x, 0])
 
         mp_lidar = np.eye(4)
         mp_lidar[:3, :3] = cv2.Rodrigues(rvec)[0]
-        mp_lidar[:3, 3] = self.coordinate_xyz
 
         pcd_echo0.transform(mp_lidar)
         pcd_echo1.transform(mp_lidar)
@@ -141,10 +137,21 @@ class MapHokuyo:
 
         self.pub_motor_flag.publish(0)
 
+    def projectCoordinates(self):
+        print("projectCoordinates")
+
+        rvec = np.radians(self.coordinate_rpy)
+
+        mp_lidar = np.eye(4)
+        mp_lidar[:3, :3] = cv2.Rodrigues(rvec)[0]
+        mp_lidar[:3, 3] = self.coordinate_xyz
+
+        self.map_echo0.transform(mp_lidar)
+        self.map_echo1.transform(mp_lidar)
+        self.map_echo2.transform(mp_lidar)
+
     def save_mapa(self):
-        print("")
         print("save_mapa")
-        print("")
 
         r = rospkg.RosPack()
         pwd_src = r.get_path('map_hokuyo')
@@ -185,4 +192,6 @@ if __name__ == '__main__':
     rospy.loginfo("\033[1;32m-> Map.\033[0m")
     rospy.spin()
 
+    print("")
+    map_hokuyo.projectCoordinates()
     map_hokuyo.save_mapa()

@@ -7,8 +7,8 @@ map_hokuyo:
       xyz: [0, 0, 0.05]
 
   coordinate:
-    xyz: [0, 0, 0]
-    rpy: [0, 0, 0]
+    xyz: [3.15, 0, 0]
+    rpy: [0, 0, 180]
 
     # Roll = X
     # Pitch = Y
